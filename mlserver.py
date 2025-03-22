@@ -25,14 +25,14 @@ def load_encodings():
 
 def preprocess_data(df):
     # Drop unnecessary columns
-    drop_cols = ['transaction_id_anonymous', 'payer_mobile_anonymous', 'is_fraud', 'transaction_date']
+    drop_cols = ['transaction_id', 'payer_mobile', 'is_fraud', 'transaction_date']
     df.drop(columns=drop_cols, inplace=True, errors='ignore')
     
     # Load encodings
     scaler, freq_encodings, one_hot_columns = load_encodings()
     
     # One-hot encoding
-    df = pd.get_dummies(df, columns=['transaction_channel', 'transaction_payment_mode_anonymous'])
+    df = pd.get_dummies(df, columns=['transaction_channel', 'transaction_payment_mode'])
     
     # Ensure all expected one-hot columns exist
     for col in one_hot_columns:
@@ -41,8 +41,8 @@ def preprocess_data(df):
     df = df[one_hot_columns]  # Keep only relevant one-hot columns
     
     # Frequency encoding
-    freq_cols = ["payer_email_anonymous", "payee_ip_anonymous", "payee_id_anonymous", 
-                 "payment_gateway_bank_anonymous", "payer_browser_anonymous"]
+    freq_cols = ["payer_email", "payee_ip", "payee_id", 
+                 "payment_gateway_bank", "payer_browser"]
     
     for col, mapping_key in zip(freq_cols, freq_encodings.keys()):
         if col in df.columns:
@@ -85,7 +85,7 @@ async def ml_predict(api_data: dict = Body(...)):
     output = predict(df_new)
     result = int(output.numpy()[0])  # Ensure it's in a serializable format
     
-    return {"transaction_id": api_data.get("transaction_id_anonymous", ""), "is_fraud": result}
+    return {"transaction_id": api_data.get("transaction_id", ""), "is_fraud": result}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8100)
