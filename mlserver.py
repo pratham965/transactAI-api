@@ -31,4 +31,5 @@ async def ml_predict(api_data: dict = Body(...)):
     return {"transaction_id": api_data.get("transaction_id_anonymous", ""), "is_fraud": result}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8100)
+    port = 8000
+    uvicorn.run(app, host="0.0.0.0", port=port)
