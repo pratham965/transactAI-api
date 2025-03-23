@@ -84,7 +84,7 @@ async def ml_predict(api_data: dict = Body(...)):
     # Make predictions
     output = predict(df_new)
     result = int(output.numpy()[0])  # Ensure it's in a serializable format
-    
+    result = result^1
     return {"transaction_id": api_data.get("transaction_id", ""), "is_fraud": result}
 
 if __name__ == "__main__":
